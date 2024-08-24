@@ -4,7 +4,10 @@ import (
 	"GBolg/conf/errmsg"
 	"GBolg/dao"
 	"GBolg/utils/logrus_logger"
+	"encoding/base64"
+	"golang.org/x/crypto/scrypt"
 	"gorm.io/gorm"
+	"log"
 )
 
 type User struct {
@@ -28,6 +31,8 @@ func CheckUser(username string) (code int) {
 }
 
 func CreateUser(user *User) int {
+	//加密
+	user.Password = ScryptPw(user.Password)
 	err := dao.DB.Create(&user).Error
 	if err != nil {
 		logrus_logger.LogRus.Errorf("create user error: %v", err)
@@ -45,6 +50,17 @@ func GetUserList(pageSize int, pageNum int) (users []User) {
 	return users
 }
 
-//func GetUserById(id int) (user User) {
-//
-//}
+// ScryptPw 密码加密
+func ScryptPw(password string) string {
+	const Keylen = 10
+	salt := make([]byte, 8)
+	salt = []byte{12, 32, 4, 6, 66, 22, 222, 11}
+	HashPw, err := scrypt.Key([]byte(password), salt, 16384, 8, 1, Keylen)
+	if err != nil {
+		logrus_logger.LogRus.Error("scrypt pw error: %v", err)
+		log.Fatal(err)
+	}
+	fpw := base64.StdEncoding.EncodeToString(HashPw)
+	return fpw
+
+}
