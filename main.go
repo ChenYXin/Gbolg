@@ -14,6 +14,7 @@ func main() {
 	logrus_logger.InitLog()
 	//连接数据库
 	dao.InitMySql()
+
 	//路由
 	routes.SetupRouter()
 }

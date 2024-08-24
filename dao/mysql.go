@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"GBolg/models"
 	"GBolg/utils/logrus_logger"
 	"GBolg/utils/viper_config"
 	"database/sql"
@@ -48,4 +49,15 @@ func InitMySql() {
 	}
 
 	logrus_logger.LogRus.Infof("connect to mysql success")
+
+	//同步表
+	errDbAutoMigrate := DB.AutoMigrate(
+		&models.User{},
+		&models.Category{},
+		&models.Article{},
+	)
+	if errDbAutoMigrate != nil {
+		panic(errDbAutoMigrate)
+	}
+	logrus_logger.LogRus.Infof("create table success")
 }
