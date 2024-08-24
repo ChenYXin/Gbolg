@@ -1,0 +1,12 @@
+log:
+  level: debug
+  file: log/blog.log
+server:
+  appModel: debug
+  httpPort: :8080
+blog:
+  host: 127.0.0.1
+  port: 3306
+  dbName: ginblog
+  userName: root
+  password: a12Cd3_45pUq6
