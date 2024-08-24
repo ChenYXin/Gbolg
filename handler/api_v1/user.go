@@ -1,22 +1,44 @@
 package api_v1
 
-import "github.com/gin-gonic/gin"
+import (
+	"GBolg/conf/errmsg"
+	"GBolg/models"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
-// 查询用户是否存在
-func UserExist(c *gin.Context) {
-
+// AddUser 添加用户
+func AddUser(c *gin.Context) {
+	var data models.User
+	_ = c.ShouldBindJSON(&data)
+	code := models.CheckUser(data.Username)
+	if code == errmsg.SUCCESS {
+		models.CreateUser(&data)
+	}
+	if code == errmsg.ERROR_USERNAME_USED {
+		code = errmsg.ERROR_USERNAME_USED
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"data":    data,
+		"message": errmsg.GetErrMsg(code),
+	})
 }
 
-// 添加用户
-func AddUser(c *gin.Context) {}
+// GetUserList 查询用户列表
+func GetUserList(c *gin.Context) {
 
-//查询单个用户
+	data := models.GetUserList(QueryPageSizeCheck(c), QueryPageNumCheck(c))
+	code := errmsg.SUCCESS
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"data":    data,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
 
-// 查询用户列表
-func GetUserList(c *gin.Context) {}
-
-// 编辑用户
+// UpdateUser 编辑用户
 func UpdateUser(c *gin.Context) {}
 
-// 删除用户
+// DeleteUser 删除用户
 func DeleteUser(c *gin.Context) {}
