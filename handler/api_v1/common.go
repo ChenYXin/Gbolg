@@ -36,9 +36,18 @@ func QueryPageNumCheck(c *gin.Context) int {
 
 func ParamIdCheck(c *gin.Context) int {
 	id := c.Param("id")
-	userID, err := strconv.Atoi(id)
+	ID, err := strconv.Atoi(id)
 	if err != nil {
 		return -1
 	}
-	return userID
+	return ID
+}
+
+func ParamCidCheck(c *gin.Context) int {
+	cid := c.Param("cid")
+	CID, err := strconv.Atoi(cid)
+	if err != nil {
+		return -1
+	}
+	return CID
 }
