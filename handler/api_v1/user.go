@@ -2,7 +2,9 @@ package api_v1
 
 import (
 	"GBolg/conf/errmsg"
+	"GBolg/handler/middleware"
 	"GBolg/models"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -11,8 +13,13 @@ import (
 func AddUser(c *gin.Context) {
 	var data models.User
 	_ = c.ShouldBindJSON(&data)
-	code := models.CheckUser(data.Username)
+	code := models.CheckUser(data.UserName)
 	if code == errmsg.SUCCESS {
+		data.Token = middleware.GenerateToken(&middleware.UserClaims{
+			UserName:       data.UserName,
+			StandardClaims: jwt.StandardClaims{},
+		})
+
 		models.CreateUser(&data)
 	}
 	if code == errmsg.ERROR_USERNAME_USED {
@@ -42,7 +49,7 @@ func UpdateUser(c *gin.Context) {
 
 	var data models.User
 	_ = c.ShouldBindJSON(&data)
-	code := models.CheckUser(data.Username)
+	code := models.CheckUser(data.UserName)
 	if code == errmsg.SUCCESS {
 		code = models.UpdateUser(userID, &data)
 	}

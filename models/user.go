@@ -12,9 +12,10 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `grom:"type:varchar(20);not null" json:"username"`
+	UserName string `grom:"type:varchar(20);not null" json:"username"`
 	Password string `grom:"type:varchar(20);not null" json:"password"`
 	Role     int    `grom:"type:int" json:"role"`
+	Token    string `gorm:"type:varchar(255);not null" json:"token"`
 }
 
 func (User) TableName() string {
@@ -52,7 +53,7 @@ func GetUserList(pageSize int, pageNum int) (users []User) {
 
 func UpdateUser(id int, user *User) int {
 	var maps = make(map[string]interface{})
-	maps["username"] = user.Username
+	maps["username"] = user.UserName
 	maps["role"] = user.Role
 	err := dao.DB.Model(&User{}).Where("id=?", id).Updates(maps).Error
 	if err != nil {
