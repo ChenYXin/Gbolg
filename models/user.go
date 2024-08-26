@@ -25,6 +25,10 @@ type userResponse struct {
 	Role     int    `json:"role"`
 	Token    string `json:"token"`
 }
+type userListResponse struct {
+	ID       uint   `json:"id"`
+	UserName string `json:"username"`
+}
 
 func (User) TableName() string {
 	return "users"
@@ -71,18 +75,25 @@ func CreateUser(user *User) int {
 	return errmsg.SUCCESS
 }
 
-func GetUserList(pageSize int, pageNum int) (users []User) {
-	err := dao.DB.Limit(pageNum).Offset(pageSize * pageNum).Order("id desc").Find(&users).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+func GetUserList(pageSize int, pageNum int) (response []userListResponse, code int) {
+	//err := dao.DB.Limit(pageNum).Offset(pageSize * pageNum).Order("id desc").Find(&users).Error
+	//if err != nil && err != gorm.ErrRecordNotFound {
+	//	logrus_logger.LogRus.Errorf("get user list error: %v", err)
+	//	return nil
+	//}
+	err := dao.DB.Table("users").
+		Select("id,user_name").
+		Limit(pageNum).Offset(pageSize * pageNum).Order("id desc").Find(&response).Error
+	if err != nil {
 		logrus_logger.LogRus.Errorf("get user list error: %v", err)
-		return nil
+		return nil, errmsg.ERROR
 	}
-	return users
+	return response, errmsg.SUCCESS
 }
 
 func UpdateUser(id uint, user *User) int {
 	var maps = make(map[string]interface{})
-	maps["username"] = user.UserName
+	maps["user_name"] = user.UserName
 	maps["role"] = user.Role
 	maps["token"] = user.Token
 	err := dao.DB.Model(&User{}).Where("id=?", id).Updates(maps).Error

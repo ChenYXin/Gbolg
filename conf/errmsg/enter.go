@@ -15,6 +15,7 @@ const (
 	ErrorTokenSigningFail = 4001
 	ErrorTokenNotExist    = 4002
 	ErrorTokenParseFail   = 4003
+	ErrorTokenValidFail   = 4004
 
 	//errmsg =2000... 分类模块的错误
 	ERROR_CATEGORY_USED = 2001

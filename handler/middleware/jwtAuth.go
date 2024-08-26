@@ -62,8 +62,8 @@ func JwtVerify(c *gin.Context) {
 	}
 	_, ok := token.Claims.(*UserClaims)
 	if !ok {
-		logrus_logger.LogRus.Errorf("jwt parse failed: %v", err)
-		code = errmsg.ErrorTokenParseFail
+		logrus_logger.LogRus.Errorf("token is valid: %v", err)
+		code = errmsg.ErrorTokenValidFail
 		panic(code)
 	}
 	c.Next()
@@ -78,11 +78,15 @@ func Refresh(tokenString string) string {
 		return secret, nil
 	})
 	if err != nil {
-		panic(err)
+		logrus_logger.LogRus.Errorf("jwt parse failed: %v", err)
+		code := errmsg.ErrorTokenParseFail
+		panic(code)
 	}
 	claims, ok := token.Claims.(*UserClaims)
 	if !ok {
-		panic("token is valid")
+		logrus_logger.LogRus.Errorf("token is valid: %v", err)
+		code := errmsg.ErrorTokenValidFail
+		panic(code)
 	}
 	jwt.TimeFunc = time.Now
 	claims.StandardClaims.ExpiresAt = time.Now().Add(2 * time.Hour).Unix()

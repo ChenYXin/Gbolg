@@ -49,8 +49,8 @@ func UserLogin(c *gin.Context) {
 
 // GetUserList 查询用户列表
 func GetUserList(c *gin.Context) {
-	data := models.GetUserList(QueryPageSizeCheck(c), QueryPageNumCheck(c))
-	code := errmsg.SUCCESS
+	data, code := models.GetUserList(QueryPageSizeCheck(c), QueryPageNumCheck(c))
+	//code := errmsg.SUCCESS
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
 		"data":    data,
@@ -66,6 +66,10 @@ func UpdateUser(c *gin.Context) {
 	_ = c.ShouldBindJSON(&data)
 	code := models.CheckUser(data.UserName)
 	if code == errmsg.SUCCESS {
+		data.Token = middleware.GenerateToken(&middleware.UserClaims{
+			UserName:       data.UserName,
+			StandardClaims: jwt.StandardClaims{},
+		})
 		code = models.UpdateUser(userID, &data)
 	}
 	if code == errmsg.ErrorUserNameIsExist {
