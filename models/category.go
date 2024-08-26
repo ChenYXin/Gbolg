@@ -44,7 +44,7 @@ func GetCategoryList(pageSize int, pageNum int) (categorys []Category) {
 	return categorys
 }
 
-func UpdateCategory(id int, category *Category) int {
+func UpdateCategory(id uint, category *Category) int {
 	var maps = make(map[string]interface{})
 	maps["name"] = category.Name
 	err := dao.DB.Model(&Category{}).Where("id=?", id).Updates(maps).Error
@@ -55,7 +55,7 @@ func UpdateCategory(id int, category *Category) int {
 	return errmsg.SUCCESS
 }
 
-func DeleteCategory(id int) int {
+func DeleteCategory(id uint) int {
 	err := dao.DB.Debug().Where("id =?", id).Delete(&Category{}).Error
 	if err != nil {
 		logrus_logger.LogRus.Errorf("delete category error: %v", err)

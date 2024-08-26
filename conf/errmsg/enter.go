@@ -4,14 +4,17 @@ const (
 	SUCCESS = 200
 	ERROR   = 500
 
-	//errmsg =1000... 用户模块的错误
-	ERROR_USERNAME_USED      = 1001
-	ERROR_PASSWORD_WRONG     = 1002
-	ERROR_USERNAME_NOT_EXIST = 1003
+	//用户模块的错误
+	ErrorUserNameIsExist        = 1001
+	ErrorUserIsExist            = 1002
+	ErrorUserNotExist           = 1003
+	ErrorPassword               = 1004
+	ErrorUserIllegalPermissions = 1005
 
-	ErrorTokenSigningFail = 1004
-	ErrorTokenNotExist    = 1005
-	ErrorTokenParseFail   = 1006
+	//token相关的错误
+	ErrorTokenSigningFail = 4001
+	ErrorTokenNotExist    = 4002
+	ErrorTokenParseFail   = 4003
 
 	//errmsg =2000... 分类模块的错误
 	ERROR_CATEGORY_USED = 2001
@@ -24,15 +27,21 @@ const (
 )
 
 var codeMsg = map[int]string{
-	SUCCESS:                          "OK",
-	ERROR:                            "FAIL",
-	ERROR_USERNAME_USED:              "用户名已存在",
-	ERROR_PASSWORD_WRONG:             "密码错误",
-	ERROR_USERNAME_NOT_EXIST:         "用户不存在",
-	ErrorTokenSigningFail:            "token生成失败",
-	ErrorTokenNotExist:               "token不存在",
-	ErrorTokenParseFail:              "token解析失败",
-	ERROR_CATEGORY_USED:              "该分类已被使用",
+	SUCCESS: "OK",
+	ERROR:   "FAIL",
+
+	ErrorUserNameIsExist:        "用户名已存在",
+	ErrorUserIsExist:            "用户已存在",
+	ErrorPassword:               "密码错误",
+	ErrorUserNotExist:           "用户不存在",
+	ErrorUserIllegalPermissions: "用户权限不足",
+
+	ErrorTokenSigningFail: "token生成失败",
+	ErrorTokenNotExist:    "token不存在",
+	ErrorTokenParseFail:   "token解析失败",
+
+	ERROR_CATEGORY_USED: "该分类已被使用",
+
 	ErrorArticleUsed:                 "该文章已被使用",
 	ErrorArticleInfoNotFound:         "文章不存在",
 	ErrorArticleListNotFound:         "没找到文章列表",

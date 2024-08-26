@@ -68,3 +68,23 @@ func JwtVerify(c *gin.Context) {
 	}
 	c.Next()
 }
+
+// Refresh 更新token
+func Refresh(tokenString string) string {
+	jwt.TimeFunc = func() time.Time {
+		return time.Unix(0, 0)
+	}
+	token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return secret, nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	claims, ok := token.Claims.(*UserClaims)
+	if !ok {
+		panic("token is valid")
+	}
+	jwt.TimeFunc = time.Now
+	claims.StandardClaims.ExpiresAt = time.Now().Add(2 * time.Hour).Unix()
+	return GenerateToken(claims)
+}

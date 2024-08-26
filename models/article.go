@@ -17,7 +17,7 @@ type Article struct {
 	Img         string `gorm:"type:varchar(100)" json:"img"`
 }
 
-type result struct {
+type articleResponse struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
 	Category    string `json:"category"`
@@ -39,23 +39,23 @@ func CreateArticle(article *Article) int {
 	return errmsg.SUCCESS
 }
 
-func GetArticleList(pageSize int, pageNum int) (results []result, code int) {
+func GetArticleList(pageSize int, pageNum int) (response []articleResponse, code int) {
 	err := dao.DB.Table("articles").
 		Select("articles.id,categorys.name as category,articles.title ,articles.content,articles.img ,articles.description").
 		Joins("left join categorys on articles.cid = categorys.id").
-		Limit(pageNum).Offset(pageSize * pageNum).Order("id asc").Find(&results).Error
+		Limit(pageNum).Offset(pageSize * pageNum).Order("id asc").Find(&response).Error
 
-	if len(results) == 0 {
+	if len(response) == 0 {
 		return nil, errmsg.ErrorArticleListNotFound
 	}
 	if err != nil {
 		logrus_logger.LogRus.Errorf("get article list error: %v", err)
 		return nil, errmsg.ERROR
 	}
-	return results, errmsg.SUCCESS
+	return response, errmsg.SUCCESS
 }
 
-func GetArticleCategoryList(cid int, pageSize int, pageNum int) (results []result, code int) {
+func GetArticleCategoryList(cid int, pageSize int, pageNum int) (results []articleResponse, code int) {
 	err := dao.DB.Table("articles").
 		Select("articles.id,categorys.name as category,articles.title ,articles.content,articles.img ,articles.description").
 		Joins("left join categorys on articles.cid = categorys.id").
@@ -72,12 +72,12 @@ func GetArticleCategoryList(cid int, pageSize int, pageNum int) (results []resul
 	return results, errmsg.SUCCESS
 }
 
-func GetArticleById(id int) (data *result, code int) {
+func GetArticleById(id uint) (response *articleResponse, code int) {
 	err := dao.DB.Table("articles").
 		Select("articles.id,categorys.name as category,articles.title ,articles.content,articles.img ,articles.description").
 		Joins("left join categorys on articles.cid = categorys.id").
 		Where("articles.id = ?", id).
-		First(&data).Error
+		First(&response).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errmsg.ErrorArticleInfoNotFound
 	}
@@ -90,7 +90,7 @@ func GetArticleById(id int) (data *result, code int) {
 	return
 }
 
-func UpdateArticle(id int, article *Article) int {
+func UpdateArticle(id uint, article *Article) int {
 	var maps = make(map[string]interface{})
 	maps["title"] = article.Title
 	maps["description"] = article.Description
@@ -104,7 +104,7 @@ func UpdateArticle(id int, article *Article) int {
 	return errmsg.SUCCESS
 }
 
-func DeleteArticle(id int) int {
+func DeleteArticle(id uint) int {
 	err := dao.DB.Debug().Where("id =?", id).Delete(&Article{}).Error
 	if err != nil {
 		logrus_logger.LogRus.Errorf("delete article error: %v", err)

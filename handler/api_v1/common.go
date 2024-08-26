@@ -34,12 +34,15 @@ func QueryPageNumCheck(c *gin.Context) int {
 	return num
 }
 
-func ParamIdCheck(c *gin.Context) int {
+func ParamIdCheck(c *gin.Context) uint {
 	id := c.Param("id")
-	ID, err := strconv.Atoi(id)
-	if err != nil {
-		return -1
-	}
+	intNum, _ := strconv.Atoi(id)
+	ID := uint(intNum)
+	//ID, err := strconv.ParseUint(id, 10, 64)
+	//ID, err := strconv.Atoi(id)
+	//if err != nil {
+	//	return -1
+	//}
 	return ID
 }
 

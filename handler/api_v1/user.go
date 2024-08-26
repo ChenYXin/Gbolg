@@ -22,12 +22,27 @@ func AddUser(c *gin.Context) {
 
 		models.CreateUser(&data)
 	}
-	if code == errmsg.ERROR_USERNAME_USED {
-		code = errmsg.ERROR_USERNAME_USED
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
+
+func UserLogin(c *gin.Context) {
+	var data models.User
+	_ = c.ShouldBindJSON(&data)
+	user, code := models.CheckLogin(data.UserName, data.Password)
+	if code == errmsg.SUCCESS {
+		//data.Token = middleware.GenerateToken(&middleware.UserClaims{
+		//	UserName:       data.UserName,
+		//	StandardClaims: jwt.StandardClaims{},
+		//})
+		data.Token = middleware.Refresh(user.Token)
+		models.UpdateUser(user.ID, &data)
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
-		"data":    data,
+		"data":    user,
 		"message": errmsg.GetErrMsg(code),
 	})
 }
@@ -53,8 +68,8 @@ func UpdateUser(c *gin.Context) {
 	if code == errmsg.SUCCESS {
 		code = models.UpdateUser(userID, &data)
 	}
-	if code == errmsg.ERROR_USERNAME_USED {
-		c.Abort()
+	if code == errmsg.ErrorUserNameIsExist {
+		panic(code)
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,

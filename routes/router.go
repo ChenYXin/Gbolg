@@ -25,28 +25,31 @@ func SetupRouter() {
 	r.Use(middleware.Recover)
 	r.Use(middleware.Cors())
 
-	routerV1 := r.Group("api/v1")
+	rv1 := r.Group("api/v1")
+	rv1.Use(middleware.JwtVerify)
 	{
-		routerV1.GET("userList", api_v1.GetUserList)
-		routerV1.GET("categoryList", api_v1.GetCategoryList)
-		routerV1.GET("articleList", api_v1.GetArticleList)
-		routerV1.GET("articleList/:cid", api_v1.GetArticleCategoryList)
-		routerV1.GET("article/:id", api_v1.GetArticleInfo)
+		rv1.GET("userList", api_v1.GetUserList)
+		rv1.GET("categoryList", api_v1.GetCategoryList)
+		rv1.GET("articleList", api_v1.GetArticleList)
+		rv1.GET("articleList/:cid", api_v1.GetArticleCategoryList)
+		rv1.GET("article/:id", api_v1.GetArticleInfo)
 
-		routerV1.POST("user/add", api_v1.AddUser)
-		routerV1.Use(middleware.JwtVerify)
+	}
+	rva1 := r.Group("api/v1")
+	{
 		//User模块的路由接口
-		routerV1.PUT("user/:id", api_v1.UpdateUser)
-		routerV1.DELETE("user/:id", api_v1.DeleteUser)
+		rva1.POST("user/add", api_v1.AddUser)
+		rva1.POST("user/login", api_v1.UserLogin)
+		rva1.PUT("user/:id", api_v1.UpdateUser)
+		rva1.DELETE("user/:id", api_v1.DeleteUser)
 		//Category模块的路由接口
-		routerV1.POST("category/add", api_v1.AddCategory)
-		routerV1.PUT("category/:id", api_v1.UpdateCategory)
-		routerV1.DELETE("category/:id", api_v1.DeleteCategory)
+		rva1.POST("category/add", api_v1.AddCategory)
+		rva1.PUT("category/:id", api_v1.UpdateCategory)
+		rva1.DELETE("category/:id", api_v1.DeleteCategory)
 		//Article模块的路由接口
-		routerV1.POST("article/add", api_v1.AddArticle)
-		routerV1.PUT("article/:id", api_v1.UpdateArticle)
-		routerV1.DELETE("article/:id", api_v1.DeleteArticle)
-
+		rva1.POST("article/add", api_v1.AddArticle)
+		rva1.PUT("article/:id", api_v1.UpdateArticle)
+		rva1.DELETE("article/:id", api_v1.DeleteArticle)
 	}
 
 	logrus_logger.LogRus.Info("http run successful")

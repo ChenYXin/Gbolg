@@ -5,6 +5,7 @@ import (
 	"GBolg/dao"
 	"GBolg/utils/logrus_logger"
 	"encoding/base64"
+	"errors"
 	"golang.org/x/crypto/scrypt"
 	"gorm.io/gorm"
 	"log"
@@ -17,6 +18,13 @@ type User struct {
 	Role     int    `grom:"type:int" json:"role"`
 	Token    string `gorm:"type:varchar(255);not null" json:"token"`
 }
+type userResponse struct {
+	ID       uint   `json:"id"`
+	UserName string `json:"username"`
+	Password string `json:"-"`
+	Role     int    `json:"role"`
+	Token    string `json:"token"`
+}
 
 func (User) TableName() string {
 	return "users"
@@ -24,11 +32,32 @@ func (User) TableName() string {
 
 func CheckUser(username string) (code int) {
 	var user User
-	dao.DB.Select("id").Where("username = ?", username).First(&user)
+	dao.DB.Select("id").Where("user_name = ?", username).First(&user)
 	if user.ID > 0 {
-		return errmsg.ERROR_USERNAME_USED //1001
+		return errmsg.ErrorUserIsExist
 	}
 	return errmsg.SUCCESS
+}
+func CheckLogin(username string, password string) (response *userResponse, code int) {
+	err := dao.DB.Table("users").
+		Select("id,user_name,password,role,token").
+		Where("user_name = ?", username).
+		First(&response).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errmsg.ErrorUserNotExist
+	}
+	if err != nil {
+		return nil, errmsg.ERROR
+	}
+
+	if ScryptPw(password) != response.Password {
+		return nil, errmsg.ErrorPassword
+	}
+	if response.Role != 0 {
+		return nil, errmsg.ErrorUserNotExist
+	}
+	return response, errmsg.SUCCESS
+
 }
 
 func CreateUser(user *User) int {
@@ -51,10 +80,11 @@ func GetUserList(pageSize int, pageNum int) (users []User) {
 	return users
 }
 
-func UpdateUser(id int, user *User) int {
+func UpdateUser(id uint, user *User) int {
 	var maps = make(map[string]interface{})
 	maps["username"] = user.UserName
 	maps["role"] = user.Role
+	maps["token"] = user.Token
 	err := dao.DB.Model(&User{}).Where("id=?", id).Updates(maps).Error
 	if err != nil {
 		logrus_logger.LogRus.Errorf("update user error: %v", err)
@@ -63,7 +93,7 @@ func UpdateUser(id int, user *User) int {
 	return errmsg.SUCCESS
 }
 
-func DeleteUser(id int) int {
+func DeleteUser(id uint) int {
 	//var user User
 	err := dao.DB.Debug().Where("id =?", id).Delete(&User{}).Error
 	if err != nil {
