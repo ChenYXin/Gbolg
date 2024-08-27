@@ -12,19 +12,22 @@ const (
 	ErrorUserIllegalPermissions = 1005
 
 	//token相关的错误
-	ErrorTokenSigningFail = 4001
-	ErrorTokenNotExist    = 4002
-	ErrorTokenParseFail   = 4003
-	ErrorTokenValidFail   = 4004
+	ErrorTokenSigningFail = 2001
+	ErrorTokenNotExist    = 2002
+	ErrorTokenParseFail   = 2003
+	ErrorTokenValidFail   = 2004
 
-	//errmsg =2000... 分类模块的错误
-	ERROR_CATEGORY_USED = 2001
-
-	//errmsg =3000... 文章模块的错误
+	//文章模块的错误
 	ErrorArticleUsed                 = 3001
 	ErrorArticleInfoNotFound         = 3002 //没找到文章信息
 	ErrorArticleListNotFound         = 3003 //没找到文章列表
 	ErrorArticleCategoryListNotFound = 3004 //没找到文章分类列表
+
+	//七牛云存储模块的错误
+	EerrorQiniuUploadFail = 4001
+
+	//分类模块的错误
+	ERROR_CATEGORY_USED = 5001
 )
 
 var codeMsg = map[int]string{
@@ -40,6 +43,8 @@ var codeMsg = map[int]string{
 	ErrorTokenSigningFail: "token生成失败",
 	ErrorTokenNotExist:    "token不存在",
 	ErrorTokenParseFail:   "token解析失败",
+
+	EerrorQiniuUploadFail: "文件上传失败",
 
 	ERROR_CATEGORY_USED: "该分类已被使用",
 
