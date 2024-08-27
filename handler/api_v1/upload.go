@@ -15,7 +15,7 @@ func Upload(c *gin.Context) {
 		panic(errmsg.ERROR)
 	}
 	fileSize := fileHeader.Size
-	code, url := models.UploadToQiniu(file, fileSize)
+	url, code := models.UploadToQiniu(file, fileSize)
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    code,

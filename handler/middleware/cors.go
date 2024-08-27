@@ -26,7 +26,6 @@ func Cors() gin.HandlerFunc {
 			c.Set("content-type", "application/json") //设置返回格式是json
 		}
 		if method == "OPTIONS" {
-			//c.JSON(200, Controller.R(200, nil, "Options Request"))
 			c.AbortWithStatus(http.StatusNoContent)
 		}
 		c.Next()

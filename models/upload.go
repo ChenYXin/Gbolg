@@ -2,15 +2,15 @@ package models
 
 import (
 	"GBolg/conf/errmsg"
+	"GBolg/utils/logrus_logger"
 	"GBolg/utils/viper_config"
 	"context"
-	"fmt"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"
 	"mime/multipart"
 )
 
-func UploadToQiniu(file multipart.File, fileSize int64) (code int, url string) {
+func UploadToQiniu(file multipart.File, fileSize int64) (url string, code int) {
 	accessKey := viper_config.VC.GetString("qiniu.accessKey")
 	secretKey := viper_config.VC.GetString("qiniu.secretKey")
 	bucket := viper_config.VC.GetString("qiniu.bucket")
@@ -44,10 +44,9 @@ func UploadToQiniu(file multipart.File, fileSize int64) (code int, url string) {
 
 	err := formUploader.PutWithoutKey(context.Background(), &ret, upToken, file, fileSize, &putExtra)
 	if err != nil {
-		fmt.Println(err)
+		logrus_logger.LogRus.Errorf("file upload fail %v", err)
 		return errmsg.EerrorQiniuUploadFail, ""
 	}
 	url = imgUrl + ret.Key
-	fmt.Println(ret.Key, ret.Hash)
 	return errmsg.SUCCESS, url
 }
