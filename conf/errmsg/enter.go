@@ -10,6 +10,7 @@ const (
 	ErrorUserNotExist           = 1003
 	ErrorPassword               = 1004
 	ErrorUserIllegalPermissions = 1005
+	ErrorUserListIsEmpty        = 1006
 
 	//token相关的错误
 	ErrorTokenSigningFail = 2001
@@ -38,6 +39,7 @@ var codeMsg = map[int]string{
 	ErrorUserIsExist:            "用户已存在",
 	ErrorPassword:               "密码错误",
 	ErrorUserNotExist:           "用户不存在",
+	ErrorUserListIsEmpty:        "用户列表为空",
 	ErrorUserIllegalPermissions: "用户权限不足",
 
 	ErrorTokenSigningFail: "token生成失败",

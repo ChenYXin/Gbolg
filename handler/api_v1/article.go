@@ -19,10 +19,11 @@ func AddArticle(c *gin.Context) {
 
 // GetArticleList 文章列表
 func GetArticleList(c *gin.Context) {
-	data, code := models.GetArticleList(QueryPageSizeCheck(c), QueryPageNumCheck(c))
+	data, total, code := models.GetArticleList(QueryPageSizeCheck(c), QueryPageNumCheck(c))
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
 		"data":    data,
+		"total":   total,
 		"message": errmsg.GetErrMsg(code),
 	})
 }
@@ -30,11 +31,12 @@ func GetArticleList(c *gin.Context) {
 func GetArticleCategoryList(c *gin.Context) {
 	cid := ParamCidCheck(c)
 
-	data, code := models.GetArticleCategoryList(cid, QueryPageSizeCheck(c), QueryPageNumCheck(c))
+	data, total, code := models.GetArticleCategoryList(cid, QueryPageSizeCheck(c), QueryPageNumCheck(c))
 	//code := errmsg.SUCCESS
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
 		"data":    data,
+		"total":   total,
 		"message": errmsg.GetErrMsg(code),
 	})
 }

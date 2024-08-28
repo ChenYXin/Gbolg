@@ -45,8 +45,8 @@ func UploadToQiniu(file multipart.File, fileSize int64) (url string, code int) {
 	err := formUploader.PutWithoutKey(context.Background(), &ret, upToken, file, fileSize, &putExtra)
 	if err != nil {
 		logrus_logger.LogRus.Errorf("file upload fail %v", err)
-		return errmsg.EerrorQiniuUploadFail, ""
+		return "", errmsg.EerrorQiniuUploadFail
 	}
 	url = imgUrl + ret.Key
-	return errmsg.SUCCESS, url
+	return url, errmsg.SUCCESS
 }

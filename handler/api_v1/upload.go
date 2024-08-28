@@ -18,7 +18,7 @@ func Upload(c *gin.Context) {
 	url, code := models.UploadToQiniu(file, fileSize)
 
 	c.JSON(http.StatusOK, gin.H{
-		"code":    code,
+		"status":  code,
 		"message": errmsg.GetErrMsg(code),
 		"url":     url,
 	})

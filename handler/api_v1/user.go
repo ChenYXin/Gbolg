@@ -33,10 +33,6 @@ func UserLogin(c *gin.Context) {
 	_ = c.ShouldBindJSON(&data)
 	user, code := models.CheckLogin(data.UserName, data.Password)
 	if code == errmsg.SUCCESS {
-		//data.Token = middleware.GenerateToken(&middleware.UserClaims{
-		//	UserName:       data.UserName,
-		//	StandardClaims: jwt.StandardClaims{},
-		//})
 		data.Token = middleware.Refresh(user.Token)
 		models.UpdateUser(user.ID, &data)
 	}

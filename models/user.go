@@ -9,25 +9,18 @@ import (
 	"golang.org/x/crypto/scrypt"
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 type User struct {
-	gorm.Model
-	UserName string `grom:"type:varchar(20);not null" json:"username"`
-	Password string `grom:"type:varchar(20);not null" json:"password"`
-	Role     int    `grom:"type:int" json:"role"`
-	Token    string `gorm:"type:varchar(255);not null" json:"token"`
-}
-type userResponse struct {
-	ID       uint   `json:"id"`
-	UserName string `json:"username"`
-	Password string `json:"-"`
-	Role     int    `json:"role"`
-	Token    string `json:"token"`
-}
-type userListResponse struct {
-	ID       uint   `json:"id"`
-	UserName string `json:"username"`
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time      `gorm:"index" json:"-"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	UserName  string         `grom:"type:varchar(20);not null" json:"username"`
+	Password  string         `grom:"type:varchar(20);not null" json:"-"`
+	Role      int            `grom:"type:int" json:"role"`
+	Token     string         `gorm:"type:varchar(255);not null" json:"token"`
 }
 
 func (User) TableName() string {
@@ -42,11 +35,12 @@ func CheckUser(username string) (code int) {
 	}
 	return errmsg.SUCCESS
 }
-func CheckLogin(username string, password string) (response *userResponse, code int) {
-	err := dao.DB.Table("users").
-		Select("id,user_name,password,role,token").
-		Where("user_name = ?", username).
-		First(&response).Error
+func CheckLogin(username string, password string) (user *User, code int) {
+	//err := dao.DB.Table("users").
+	//	Select("id,user_name,password,role,token").
+	//	Where("user_name = ?", username).
+	//	First(&response).Error
+	err := dao.DB.Where("user_name = ?", username).First(&user).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errmsg.ErrorUserNotExist
 	}
@@ -54,13 +48,13 @@ func CheckLogin(username string, password string) (response *userResponse, code 
 		return nil, errmsg.ERROR
 	}
 
-	if ScryptPw(password) != response.Password {
+	if ScryptPw(password) != user.Password {
 		return nil, errmsg.ErrorPassword
 	}
-	if response.Role != 0 {
-		return nil, errmsg.ErrorUserNotExist
+	if user.Role != 0 {
+		return nil, errmsg.ErrorUserIllegalPermissions
 	}
-	return response, errmsg.SUCCESS
+	return user, errmsg.SUCCESS
 
 }
 
@@ -75,20 +69,23 @@ func CreateUser(user *User) int {
 	return errmsg.SUCCESS
 }
 
-func GetUserList(pageSize int, pageNum int) (response []userListResponse, code int) {
-	//err := dao.DB.Limit(pageNum).Offset(pageSize * pageNum).Order("id desc").Find(&users).Error
-	//if err != nil && err != gorm.ErrRecordNotFound {
-	//	logrus_logger.LogRus.Errorf("get user list error: %v", err)
-	//	return nil
-	//}
-	err := dao.DB.Table("users").
-		Select("id,user_name").
-		Limit(pageNum).Offset(pageSize * pageNum).Order("id desc").Find(&response).Error
+func GetUserList(pageSize int, pageNum int) (users []User, code int) {
+	err := dao.DB.Limit(pageNum).Offset(pageSize * pageNum).Order("id desc").Find(&users).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errmsg.ErrorUserListIsEmpty
+	}
 	if err != nil {
 		logrus_logger.LogRus.Errorf("get user list error: %v", err)
 		return nil, errmsg.ERROR
 	}
-	return response, errmsg.SUCCESS
+	//err := dao.DB.Table("users").
+	//	Select("id,user_name").
+	//	Limit(pageNum).Offset(pageSize * pageNum).Order("id desc").Find(&users).Error
+	//if err != nil {
+	//	logrus_logger.LogRus.Errorf("get user list error: %v", err)
+	//	return nil, errmsg.ERROR
+	//}
+	return users, errmsg.SUCCESS
 }
 
 func UpdateUser(id uint, user *User) int {
