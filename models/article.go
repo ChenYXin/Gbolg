@@ -10,8 +10,8 @@ import (
 )
 
 type Article struct {
-	ID          uint `gorm:"primarykey"`
-	CreatedAt   time.Time
+	ID          uint           `gorm:"primarykey"`
+	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `gorm:"index" json:"-"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
 	Cid         int8           `gorm:"type:int" json:"cid"`
@@ -34,7 +34,7 @@ func CreateArticle(article *Article) int {
 	return errmsg.SUCCESS
 }
 
-func GetArticleList(pageSize int, pageNum int) (articles []Article, total int64, code int) {
+func GetArticleList(pageSize int, pageNum int) (articles []*Article, total int64, code int) {
 	//err := dao.DB.Table("articles").
 	//	Select("articles.id,categorys.name as category,articles.title ,articles.content,articles.img ,articles.description").
 	//	Joins("left join categorys on articles.cid = categorys.id").
@@ -50,11 +50,11 @@ func GetArticleList(pageSize int, pageNum int) (articles []Article, total int64,
 	//}
 	//return response, errmsg.SUCCESS
 
-	db := dao.DB.Model(&Article{})
+	db := dao.DB.Model(&Article{}) //.Where("id >= ?", 0)
 	db.Count(&total)
 
-	err := db.Order("update_time desc").Offset(pageSize * pageNum).Limit(pageNum).Find(&articles).Error
-	if len(articles) == 0 {
+	err := db.Order("updated_at desc").Offset(pageSize * pageNum).Limit(pageNum).Find(&articles).Error
+	if total == 0 {
 		return nil, 0, errmsg.ErrorArticleListNotFound
 	}
 	if err != nil {
@@ -117,6 +117,7 @@ func GetArticleById(id uint) (article *Article, code int) {
 func UpdateArticle(id uint, article *Article) int {
 	var maps = make(map[string]interface{})
 	maps["title"] = article.Title
+	maps["cid"] = article.Cid
 	maps["description"] = article.Description
 	maps["content"] = article.Content
 	maps["img"] = article.Img
