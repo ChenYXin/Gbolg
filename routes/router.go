@@ -6,6 +6,7 @@ import (
 	"GBolg/utils/logrus_logger"
 	"GBolg/utils/viper_config"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func SetupRouter() {
@@ -15,6 +16,12 @@ func SetupRouter() {
 
 	gin.SetMode(sAppModel)
 	r := gin.Default()
+
+	//全局中间件，记录每个接口的调用次数和每次的耗时
+	r.Use(middleware.Metric())
+	r.GET("/metrics", func(ctx *gin.Context) { //Promethus要来访问这个接口
+		promhttp.Handler().ServeHTTP(ctx.Writer, ctx.Request)
+	})
 
 	//注意 Recover 要尽量放在第一个被加载
 	//如不是的话，在recover前的中间件或路由，将不能被拦截到

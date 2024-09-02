@@ -5,7 +5,9 @@ go 1.22
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
+	github.com/prometheus/client_golang v1.20.2
 	github.com/qiniu/go-sdk/v7 v7.21.1
+	github.com/redis/go-redis/v9 v9.6.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.19.0
 	gorm.io/driver/mysql v1.5.7
@@ -15,9 +17,17 @@ require (
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/alex-ant/gomath v0.0.0-20160516115720-89013a210a82 // indirect
+	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
+	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/matishsiao/goInfo v0.0.0-20210923090445-da2e3fa8d45f // indirect
-	golang.org/x/sync v0.6.0 // indirect
+	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/prometheus/client_model v0.6.1 // indirect
+	github.com/prometheus/common v0.55.0 // indirect
+	github.com/prometheus/procfs v0.15.1 // indirect
+	golang.org/x/sync v0.7.0 // indirect
 )
 
 require (
@@ -61,12 +71,12 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
-	golang.org/x/crypto v0.23.0
+	golang.org/x/crypto v0.24.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
-	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/text v0.15.0 // indirect
-	google.golang.org/protobuf v1.34.1 // indirect
+	golang.org/x/net v0.26.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

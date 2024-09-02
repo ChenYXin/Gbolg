@@ -25,6 +25,8 @@ func main() {
 		panic(errDbAutoMigrate)
 	}
 	logrus_logger.LogRus.Infof("create table success")
+	//初始化redis
+	dao.InitMyRedis()
 
 	//路由
 	routes.SetupRouter()

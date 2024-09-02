@@ -10,3 +10,12 @@ blog:
   dbName: ginblog
   userName: root
   password: a12Cd3_45pUq6
+redis:
+  addr: 127.0.0.1:6379
+  db: 0
+  pass:
+qiniu:
+  accessKey: NlLBHAWaYAy8PkxxEBpkBGXJk7Adb9ZKmVkG6MkG
+  secretKey: NypL0GsrYvcQu6A6HSYgePadl8NaAwnPKeee8CUW
+  bucket: donkor-ginblog
+  qiniuServer: http://sivnjg2g0.hn-bkt.clouddn.com/
