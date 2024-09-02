@@ -10,6 +10,14 @@ const (
 	pageNum  = 10
 )
 
+func QueryKeyWordCheck(c *gin.Context) string {
+	keyword, ok := c.GetQuery("keyword")
+	if !ok {
+		return ""
+	}
+	return keyword
+}
+
 func QueryPageSizeCheck(c *gin.Context) int {
 	index, ok := c.GetQuery("pageSize")
 	if !ok {

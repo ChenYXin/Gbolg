@@ -19,7 +19,7 @@ func AddArticle(c *gin.Context) {
 
 // GetArticleList 文章列表
 func GetArticleList(c *gin.Context) {
-	data, total, code := models.GetArticleList(QueryPageSizeCheck(c), QueryPageNumCheck(c))
+	data, total, code := models.GetArticleList(QueryKeyWordCheck(c), QueryPageSizeCheck(c), QueryPageNumCheck(c))
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
 		"data":    data,

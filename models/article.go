@@ -34,7 +34,7 @@ func CreateArticle(article *Article) int {
 	return errmsg.SUCCESS
 }
 
-func GetArticleList(pageSize int, pageNum int) (articles []*Article, total int64, code int) {
+func GetArticleList(keyword string, pageSize int, pageNum int) (articles []*Article, total int64, code int) {
 	//err := dao.DB.Table("articles").
 	//	Select("articles.id,categorys.name as category,articles.title ,articles.content,articles.img ,articles.description").
 	//	Joins("left join categorys on articles.cid = categorys.id").
@@ -50,7 +50,7 @@ func GetArticleList(pageSize int, pageNum int) (articles []*Article, total int64
 	//}
 	//return response, errmsg.SUCCESS
 
-	db := dao.DB.Model(&Article{}) //.Where("id >= ?", 0)
+	db := dao.DB.Model(&Article{}).Where("title like ?", "%"+keyword+"%")
 	db.Count(&total)
 
 	err := db.Order("updated_at desc").Offset(pageSize * pageNum).Limit(pageNum).Find(&articles).Error
