@@ -34,6 +34,7 @@ func SetupRouter() {
 
 	rv1 := r.Group("api/v1")
 	{
+		rv1.POST("user/add", api_v1.AddUser)
 		rv1.POST("user/login", api_v1.UserLogin)
 
 		rv1.GET("userList", api_v1.GetUserList)
@@ -49,8 +50,6 @@ func SetupRouter() {
 		//七牛云上传
 		rva1.POST("file/upload", api_v1.Upload)
 		//User模块的路由接口
-		rva1.POST("user/add", api_v1.AddUser)
-
 		rva1.PUT("user/:id", api_v1.UpdateUser)
 		rva1.DELETE("user/:id", api_v1.DeleteUser)
 		//Category模块的路由接口

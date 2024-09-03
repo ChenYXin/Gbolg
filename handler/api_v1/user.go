@@ -15,7 +15,7 @@ func AddUser(c *gin.Context) {
 	_ = c.ShouldBindJSON(&data)
 	code := models.CheckUser(data.UserName)
 	if code == errmsg.SUCCESS {
-		data.Token = middleware.GenerateToken(&middleware.UserClaims{
+		middleware.GenerateToken(&middleware.UserClaims{
 			UserName:       data.UserName,
 			StandardClaims: jwt.StandardClaims{},
 		})
@@ -32,13 +32,16 @@ func UserLogin(c *gin.Context) {
 	var data models.User
 	_ = c.ShouldBindJSON(&data)
 	user, code := models.CheckLogin(data.UserName, data.Password)
+	var token string
 	if code == errmsg.SUCCESS {
-		data.Token = middleware.Refresh(user.Token)
+		currentToken := models.GetToken(user.UserName)
+		token = middleware.Refresh(currentToken)
 		models.UpdateUser(user.ID, &data)
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
 		"data":    user,
+		"token":   token,
 		"message": errmsg.GetErrMsg(code),
 	})
 }
@@ -46,7 +49,6 @@ func UserLogin(c *gin.Context) {
 // GetUserList 查询用户列表
 func GetUserList(c *gin.Context) {
 	data, code := models.GetUserList(QueryPageSizeCheck(c), QueryPageNumCheck(c))
-	//code := errmsg.SUCCESS
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
 		"data":    data,
@@ -62,7 +64,7 @@ func UpdateUser(c *gin.Context) {
 	_ = c.ShouldBindJSON(&data)
 	code := models.CheckUser(data.UserName)
 	if code == errmsg.SUCCESS {
-		data.Token = middleware.GenerateToken(&middleware.UserClaims{
+		middleware.GenerateToken(&middleware.UserClaims{
 			UserName:       data.UserName,
 			StandardClaims: jwt.StandardClaims{},
 		})
